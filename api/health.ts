@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { sql } from "./_lib/db"
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   const env = {
@@ -8,9 +7,12 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     BLOB_READ_WRITE_TOKEN: !!process.env.BLOB_READ_WRITE_TOKEN,
   }
 
-  let db: { ok: boolean; error?: string; counts?: Record<string, number> } = { ok: false }
+  let db: { ok: boolean; error?: string; counts?: Record<string, number> } = { ok: false, error: "skipped" }
+
   if (env.DATABASE_URL) {
     try {
+      const { neon } = await import("@neondatabase/serverless")
+      const sql = neon(process.env.DATABASE_URL!)
       const rows = await sql`
         SELECT
           (SELECT count(*)::int FROM publications)  AS publications,

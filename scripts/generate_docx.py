@@ -16,7 +16,12 @@ from docx.shared import Cm, Mm, Pt
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_FILE = ROOT / "Проектная работа Абдуллаев И.docx"
-SCREENS_DIR = ROOT / "docs" / "screens"
+DOCS_DIR = ROOT / "docs"
+SCREENS_DIR = DOCS_DIR / "screens"
+
+ARCH_PNG       = DOCS_DIR / "architecture.png"
+ER_PNG         = DOCS_DIR / "er-diagram.png"
+LIFECYCLE_PNG  = DOCS_DIR / "subscription-lifecycle.png"
 
 FONT = "Times New Roman"
 DEPLOY_URL = "https://ilhom-oj9x.vercel.app/"
@@ -198,6 +203,36 @@ def add_heading_h2(doc, text: str) -> None:
     p = doc.add_paragraph(text, style="Heading 2")
     for run in p.runs:
         _set_run_font(run, size=14, bold=True)
+
+
+def add_figure(doc, image_path: Path, caption: str, *, width_cm: float = 16.0,
+                placeholder_text: str | None = None) -> None:
+    """Вставить рисунок шириной width_cm и подпись TNR 12 без курсива.
+
+    Если файл не найден, вставляется текстовая заглушка.
+    """
+    p_img = doc.add_paragraph()
+    p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_img.paragraph_format.first_line_indent = Cm(0)
+    p_img.paragraph_format.space_before = Pt(6)
+    p_img.paragraph_format.space_after = Pt(0)
+
+    if image_path.is_file():
+        run = p_img.add_run()
+        run.add_picture(str(image_path), width=Cm(width_cm))
+    else:
+        marker = placeholder_text or f"[ВСТАВИТЬ РИСУНОК: {image_path.name}]"
+        run = p_img.add_run(marker)
+        _set_run_font(run, size=12, italic=True)
+
+    p_cap = doc.add_paragraph()
+    p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_cap.paragraph_format.first_line_indent = Cm(0)
+    p_cap.paragraph_format.line_spacing = 1.0
+    p_cap.paragraph_format.space_before = Pt(0)
+    p_cap.paragraph_format.space_after = Pt(12)
+    cap_run = p_cap.add_run(caption)
+    _set_run_font(cap_run, size=12)
 
 
 # ────────────────────────────── 1. Титульный лист ──────────────────────────────
@@ -744,11 +779,7 @@ def build_theory_section_2(doc) -> None:
         "слой — файловое хранилище Vercel Blob, в котором лежат PDF-номера "
         "и изображения обложек, а ссылки на эти файлы записаны в базе.")
 
-    add_para(doc, "[ВСТАВИТЬ РИС.: Архитектурная схема системы — docs/architecture.png]",
-             align=WD_ALIGN_PARAGRAPH.CENTER, first_line=Cm(0), italic=True)
-    add_para(doc, "Рис. 1. Архитектурная схема системы",
-             align=WD_ALIGN_PARAGRAPH.CENTER, first_line=Cm(0), size=12)
-    add_blank_line(doc)
+    add_figure(doc, ARCH_PNG, "Рис. 1. Архитектурная схема системы")
 
     add_para(doc,
         "Поток оформления подписки выглядит следующим образом. Клиент "
@@ -856,11 +887,7 @@ def build_theory_section_3(doc) -> None:
         "обеспечивают целостность данных при операциях вставки, обновления "
         "и удаления.")
 
-    add_para(doc, "[ВСТАВИТЬ РИС.: ER-диаграмма базы данных — docs/er-diagram.png]",
-             align=WD_ALIGN_PARAGRAPH.CENTER, first_line=Cm(0), italic=True)
-    add_para(doc, "Рис. 2. Логическая ER-диаграмма базы данных",
-             align=WD_ALIGN_PARAGRAPH.CENTER, first_line=Cm(0), size=12)
-    add_blank_line(doc)
+    add_figure(doc, ER_PNG, "Рис. 2. Логическая ER-диаграмма базы данных")
 
     add_heading_h2(doc, "3.4. Жизненный цикл подписки")
     add_para(doc,
@@ -873,11 +900,7 @@ def build_theory_section_3(doc) -> None:
         "может быть переведена в состояние cancelled до окончания срока, "
         "при этом доступ к PDF прекращается немедленно.")
 
-    add_para(doc, "[ВСТАВИТЬ РИС.: Диаграмма состояний подписки — docs/subscription-lifecycle.png]",
-             align=WD_ALIGN_PARAGRAPH.CENTER, first_line=Cm(0), italic=True)
-    add_para(doc, "Рис. 3. Диаграмма состояний подписки",
-             align=WD_ALIGN_PARAGRAPH.CENTER, first_line=Cm(0), size=12)
-    add_blank_line(doc)
+    add_figure(doc, LIFECYCLE_PNG, "Рис. 3. Диаграмма состояний подписки")
 
     add_heading_h2(doc, "3.5. Индексы и контроль доступа")
     add_para(doc,
