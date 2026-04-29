@@ -1,0 +1,133 @@
+{
+  "brand": {
+    "name": "Vatan Press",
+    "tagline": "O'zbekistonning kundalik matbuoti"
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "catalog": "Katalog",
+    "account": "Kabinet",
+    "admin": "Admin",
+    "login": "Kirish",
+    "register": "Ro'yxatdan o'tish",
+    "logout": "Chiqish"
+  },
+  "home": {
+    "edition": "Soni",
+    "since": "Nashr qilinadi",
+    "deck_left": "O'zbekiston gazeta va jurnallari. Kundalik obuna, arxiv va PDF-sonlarga kirish imkoni.",
+    "hero_title": "Mamlakat o'qiydigan gazetalar va jurnallar",
+    "hero_lead": "Qirq nashr, to'rt til, bitta kabinet. Bir oy, uch oy yoki bir yillik obuna, barcha sonlarga PDF formatda zudlik bilan kirish.",
+    "cta_subscribe": "Obuna bo'lish",
+    "cta_browse": "Katalogga o'tish",
+    "section_popular": "Hafta nashrlari",
+    "section_categories": "Bo'limlar",
+    "section_how": "Obuna qanday ishlaydi",
+    "how_step_1": "Nashrni tanlang",
+    "how_step_1_desc": "Katalogda biznes, fan, madaniyat va sport bo'yicha gazeta va jurnallar yig'ilgan.",
+    "how_step_2": "Davrni to'lang",
+    "how_step_2_desc": "Bir oy, uch oy yoki bir yil. Uzcard, Humo yoki Visa kartasi.",
+    "how_step_3": "Cheksiz o'qing",
+    "how_step_3_desc": "Barcha sonlar shaxsiy kabinetda PDF formatda. Yuklab olish va oflayn o'qish.",
+    "stat_pubs": "nashr",
+    "stat_readers": "o'quvchi",
+    "stat_issues": "arxivdagi son",
+    "ticker_words": [
+      "ELEKTRON OBUNA",
+      "KUNDALIK ARXIV",
+      "BIR BOSISH BILAN YETKAZIB BERISH",
+      "1991 YILDAN BERI",
+      "RUS VA O'ZBEK TILLARIDA"
+    ]
+  },
+  "catalog": {
+    "title": "Nashrlar katalogi",
+    "filter_category": "Bo'lim",
+    "filter_type": "Turi",
+    "search_placeholder": "Nashrni topish",
+    "type_newspaper": "Gazeta",
+    "type_magazine": "Jurnal",
+    "sort_default": "Standart",
+    "sort_price_asc": "Narx bo'yicha ↑",
+    "sort_price_desc": "Narx bo'yicha ↓",
+    "empty": "So'rovingiz bo'yicha hech narsa topilmadi"
+  },
+  "publication": {
+    "subscribe": "Obuna bo'lish",
+    "period_1": "1 oy",
+    "period_3": "3 oy",
+    "period_12": "12 oy",
+    "issues": "Sonlar",
+    "about": "Nashr haqida"
+  },
+  "auth": {
+    "login_title": "Kabinetga kirish",
+    "register_title": "Akkaunt yaratish",
+    "email": "Elektron pochta",
+    "password": "Parol",
+    "full_name": "Ism va familiya",
+    "phone": "Telefon",
+    "submit_login": "Kirish",
+    "submit_register": "Ro'yxatdan o'tish",
+    "no_account": "Akkauntingiz yo'qmi",
+    "have_account": "Akkaunt bormi",
+    "to_register": "Ro'yxatdan o'tish",
+    "to_login": "Kirish"
+  },
+  "account": {
+    "title": "Shaxsiy kabinet",
+    "profile": "Profil",
+    "subscriptions": "Mening obunalarim",
+    "payments": "To'lovlar",
+    "no_subscriptions": "Faol obunalar yo'q",
+    "status_active": "faol",
+    "status_pending": "kutilmoqda",
+    "status_expired": "muddati o'tgan",
+    "status_cancelled": "bekor qilingan",
+    "until": "tugash sanasi",
+    "renew": "Uzaytirish",
+    "cancel": "Bekor qilish",
+    "details": "Batafsil",
+    "issues_archive": "Sonlar arxivi",
+    "download_pdf": "PDF yuklab olish"
+  },
+  "checkout": {
+    "title": "Obuna rasmiylashtirish",
+    "card_number": "Karta raqami",
+    "card_holder": "Karta egasi",
+    "card_expiry": "OO / YY",
+    "card_cvc": "CVC",
+    "total": "Jami",
+    "pay": "To'lash",
+    "success": "To'lov muvaffaqiyatli amalga oshirildi"
+  },
+  "admin": {
+    "dashboard": "Boshqaruv paneli",
+    "publications": "Nashrlar",
+    "users": "Foydalanuvchilar",
+    "issues": "Sonlar",
+    "add_publication": "Yangi nashr",
+    "upload_pdf": "PDF yuklash",
+    "metric_users": "Foydalanuvchilar",
+    "metric_subs": "Faol obunalar",
+    "metric_revenue": "Oylik daromad",
+    "metric_issues": "Yuklangan sonlar"
+  },
+  "common": {
+    "currency": "so'm",
+    "per_month": "/ oy",
+    "loading": "Yuklanmoqda",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "back": "Orqaga"
+  },
+  "footer": {
+    "about": "Vatan Press — O'zbekiston gazetalari va jurnallariga elektron obuna platformasi.",
+    "contacts": "Aloqa",
+    "legal": "Huquqiy ma'lumot",
+    "address": "Toshkent, TATU, Amir Temur, 108",
+    "rights": "Barcha huquqlar himoyalangan"
+  }
+}
