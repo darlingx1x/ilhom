@@ -36,4 +36,10 @@ docs/          Спецификации и скриншоты
 
 ## Деплой
 
-`git push` в подключённый Vercel-репозиторий. Переменные окружения настраиваются в Vercel UI (DATABASE_URL, JWT_SECRET, BLOB_READ_WRITE_TOKEN).
+Полная инструкция в `DEPLOY.md`. Кратко:
+
+1. https://vercel.com/new → импорт репозитория `darlingx1x/ilhom`
+2. В **Environment Variables** добавить `DATABASE_URL`, `JWT_SECRET`, `BLOB_READ_WRITE_TOKEN` из `.env.local`
+3. **Deploy**
+
+После первого деплоя `git push origin main` автоматически пересобирает прод.

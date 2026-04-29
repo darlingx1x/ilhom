@@ -1,0 +1,14 @@
+node_modules
+dist
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.log
+.vscode
+.idea
+.playwright-mcp
+screen-*.png
+docs/screens
+*.tsbuildinfo
+dev
