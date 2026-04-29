@@ -30,10 +30,14 @@ async function main() {
 }
 
 function splitSql(source: string): string[] {
-  return source
+  const stripped = source
+    .split("\n")
+    .map((line) => (line.trim().startsWith("--") ? "" : line))
+    .join("\n")
+  return stripped
     .split(/;\s*(?:\r?\n|$)/)
     .map((s) => s.trim())
-    .filter((s) => s.length > 0 && !s.startsWith("--"))
+    .filter((s) => s.length > 0)
 }
 
 main().catch((err) => {
