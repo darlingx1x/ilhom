@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { sql } from "../_lib/db"
-import { comparePassword, hashPassword, signToken, withAuth } from "../_lib/auth"
-import { schemas } from "../_lib/validate"
-import { ensureMethod, mapError, pickQuery } from "../_lib/http"
+import { sql } from "../_lib/db.js"
+import { comparePassword, hashPassword, signToken, withAuth } from "../_lib/auth.js"
+import { schemas } from "../_lib/validate.js"
+import { ensureMethod, mapError, pickQuery } from "../_lib/http.js"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const action = pickQuery(req, "action")

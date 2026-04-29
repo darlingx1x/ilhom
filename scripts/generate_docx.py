@@ -924,20 +924,20 @@ def build_theory_section_3(doc) -> None:
 
 
 SCREENSHOTS = {
-    "home":             ("01-home.png",                "Рис. 4. Главная страница приложения"),
-    "catalog_filters":  ("02-catalog-filters.png",     "Рис. 5. Каталог изданий с фильтрами по категории и типу"),
-    "catalog_search":   ("03-catalog-search.png",      "Рис. 6. Каталог изданий с поиском по названию"),
-    "publication":      ("04-publication-detail.png",  "Рис. 7. Карточка издания с выбором срока подписки"),
-    "auth":             ("05-auth.png",                "Рис. 8. Формы регистрации и входа"),
-    "profile":          ("06-account-profile.png",     "Рис. 9. Личный кабинет — профиль"),
-    "my_subs":          ("07-my-subscriptions.png",    "Рис. 10. Мои подписки"),
-    "archive":          ("08-archive.png",             "Рис. 11. Архив номеров активной подписки"),
-    "checkout":         ("09-checkout.png",            "Рис. 12. Оформление подписки и имитация оплаты"),
-    "payments":         ("10-payments-history.png",    "Рис. 13. История платежей пользователя"),
-    "admin_dashboard":  ("11-admin-dashboard.png",     "Рис. 14. Административный дашборд с метриками"),
-    "admin_pubs":       ("12-admin-publications.png",  "Рис. 15. Список изданий в административной панели"),
-    "admin_pub_edit":   ("13-admin-publication-edit.png", "Рис. 16. Форма редактирования издания"),
-    "admin_issues":     ("14-admin-issues.png",        "Рис. 17. Управление номерами и загрузка PDF"),
+    "home_hero":         ("01-home-hero.png",            "Рис. 4. Главная страница: герой-блок и призыв к действию"),
+    "home_popular":      ("02-home-popular.png",         "Рис. 5. Главная страница: каталог категорий и популярные издания"),
+    "home_workflow":     ("03-home-workflow.png",        "Рис. 6. Главная страница: блок «Как работает подписка»"),
+    "home_footer":       ("04-home-footer.png",          "Рис. 7. Подвал страницы с контактами и навигацией"),
+    "pub_pricing":       ("05-publication-pricing.png",  "Рис. 8. Карточка издания: выбор срока подписки и расчёт стоимости"),
+    "pub_issues":        ("06-publication-issues.png",   "Рис. 9. Карточка издания: блок «Об издании» и список выпусков"),
+    "register":          ("07-register.png",             "Рис. 10. Форма регистрации нового пользователя"),
+    "profile":           ("08-account-profile.png",      "Рис. 11. Личный кабинет: раздел «Профиль»"),
+    "sub_details":       ("09-subscription-details.png", "Рис. 12. Личный кабинет: детали подписки и архив номеров"),
+    "pdf_reader":        ("10-pdf-reader.png",           "Рис. 13. Открытый PDF-номер, скачанный из архива подписки"),
+    "checkout_empty":    ("11-checkout-empty.png",       "Рис. 14. Оформление подписки: незаполненная форма платежа"),
+    "checkout_filled":   ("12-checkout-filled.png",      "Рис. 15. Оформление подписки: заполненная форма платежа"),
+    "payments":          ("13-payments-history.png",     "Рис. 16. История платежей пользователя"),
+    "i18n_header":       ("14-header-i18n.png",          "Рис. 17. Шапка приложения с переключателем языка ru / uz"),
 }
 
 
