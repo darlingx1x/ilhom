@@ -2,24 +2,25 @@ import { neon, type NeonQueryFunction } from "@neondatabase/serverless"
 
 let cached: NeonQueryFunction<false, false> | null = null
 
-function getSql(): NeonQueryFunction<false, false> {
+function getClient(): NeonQueryFunction<false, false> {
   if (cached) return cached
   const url = process.env.DATABASE_URL
   if (!url) {
-    throw new Error("DATABASE_URL is not configured (Vercel → Settings → Environment Variables)")
+    throw new Error("DATABASE_URL is not configured")
   }
   cached = neon(url)
   return cached
 }
 
-/** Прокси над neon-клиентом: тот же tagged-template API, но lazy-init. */
-export const sql = new Proxy(function () {} as unknown as NeonQueryFunction<false, false>, {
-  apply(_target, _thisArg, args) {
-    const fn = getSql() as unknown as (...a: unknown[]) => unknown
-    return fn(...args)
-  },
-  get(_target, prop) {
-    const fn = getSql() as unknown as Record<string | symbol, unknown>
-    return fn[prop]
-  },
-}) as NeonQueryFunction<false, false>
+/** Tagged-template SQL: `sql\`SELECT * FROM x WHERE id = ${id}\``. Lazy-init клиента. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function sql<T = any>(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): Promise<T[]> {
+  const client = getClient() as unknown as (
+    s: TemplateStringsArray,
+    ...v: unknown[]
+  ) => Promise<T[]>
+  return client(strings, ...values)
+}
