@@ -1,6 +1,6 @@
-import { sql } from "../../_lib/db"
-import { withAuth } from "../../_lib/auth"
-import { ensureMethod, mapError, pickQuery } from "../../_lib/http"
+import { sql } from "../_lib/db"
+import { withAuth } from "../_lib/auth"
+import { ensureMethod, mapError, pickQuery } from "../_lib/http"
 
 export default withAuth(async (req, res, { user }) => {
   if (!ensureMethod(req, res, ["GET"])) return
