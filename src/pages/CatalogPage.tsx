@@ -4,8 +4,18 @@ import { useSearchParams } from "react-router-dom"
 import { PageHeader } from "@/components/common/Container"
 import { PublicationCard } from "@/components/catalog/PublicationCard"
 import { Input } from "@/components/ui/input"
-import { mockCategories, mockPublications } from "@/lib/mockData"
+import { useFetch } from "@/hooks/useFetch"
+import type { Category, Publication } from "@/types"
 import { cn } from "@/lib/utils"
+
+interface PublicationsResponse {
+  publications: Publication[]
+  total: number
+}
+
+interface CategoriesResponse {
+  categories: Category[]
+}
 
 export function CatalogPage() {
   const { t, i18n } = useTranslation()
@@ -16,23 +26,22 @@ export function CatalogPage() {
   const [q, setQ] = useState("")
   const [sort, setSort] = useState<"default" | "price_asc" | "price_desc">("default")
 
-  const filtered = useMemo(() => {
-    let list = mockPublications.filter((p) => {
-      if (category) {
-        const cat = mockCategories.find((c) => c.slug === category)
-        if (!cat || p.category_id !== cat.id) return false
-      }
-      if (type && p.type !== type) return false
-      if (q) {
-        const hay = `${p.title_ru} ${p.title_uz}`.toLowerCase()
-        if (!hay.includes(q.toLowerCase())) return false
-      }
-      return true
-    })
-    if (sort === "price_asc") list = [...list].sort((a, b) => a.price_per_month - b.price_per_month)
-    if (sort === "price_desc") list = [...list].sort((a, b) => b.price_per_month - a.price_per_month)
-    return list
+  const queryString = useMemo(() => {
+    const sp = new URLSearchParams()
+    if (category) sp.set("category", category)
+    if (type) sp.set("type", type)
+    if (q) sp.set("q", q)
+    if (sort !== "default") sp.set("sort", sort)
+    return sp.toString()
   }, [category, type, q, sort])
+
+  const { data, loading } = useFetch<PublicationsResponse>(
+    `/publications${queryString ? "?" + queryString : ""}`,
+  )
+  const { data: catData } = useFetch<CategoriesResponse>("/categories")
+
+  const publications = data?.publications ?? []
+  const categories = catData?.categories ?? []
 
   function setParam(key: string, value: string) {
     const next = new URLSearchParams(params)
@@ -51,16 +60,13 @@ export function CatalogPage() {
 
       <section className="container pb-20">
         <div className="grid grid-cols-12 gap-8">
-          {/* Filters */}
           <aside className="col-span-12 lg:col-span-3">
             <div className="sticky top-6 space-y-8">
-              <div>
-                <Input
-                  placeholder={t("catalog.search_placeholder")}
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                />
-              </div>
+              <Input
+                placeholder={t("catalog.search_placeholder")}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
 
               <div>
                 <div className="small-caps font-sans text-[0.72rem] font-semibold text-ink-mute mb-3">
@@ -78,7 +84,7 @@ export function CatalogPage() {
                       {lang === "uz" ? "Hammasi" : "Все"}
                     </button>
                   </li>
-                  {mockCategories.map((c) => (
+                  {categories.map((c) => (
                     <li key={c.id}>
                       <button
                         onClick={() => setParam("category", c.slug)}
@@ -122,11 +128,10 @@ export function CatalogPage() {
             </div>
           </aside>
 
-          {/* Results */}
           <div className="col-span-12 lg:col-span-9">
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-paper-line">
               <div className="font-editorial text-ink-mute">
-                {filtered.length} {lang === "uz" ? "ta nashr" : "изданий"}
+                {publications.length} {lang === "uz" ? "ta nashr" : "изданий"}
               </div>
               <select
                 value={sort}
@@ -139,13 +144,15 @@ export function CatalogPage() {
               </select>
             </div>
 
-            {filtered.length === 0 ? (
+            {loading ? (
+              <div className="py-20 text-center font-editorial text-ink-mute">{t("common.loading")}…</div>
+            ) : publications.length === 0 ? (
               <div className="font-editorial text-ink-mute py-20 text-center">
                 {t("catalog.empty")}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-12">
-                {filtered.map((p) => (
+                {publications.map((p) => (
                   <PublicationCard key={p.id} publication={p} />
                 ))}
               </div>

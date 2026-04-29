@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { todayHeader } from "@/lib/format"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/lib/AuthContext"
 import { LanguageSwitcher } from "./LanguageSwitcher"
 import { cn } from "@/lib/utils"
 

@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/lib/AuthContext"
 import { cn } from "@/lib/utils"
 
 export function AccountLayout() {

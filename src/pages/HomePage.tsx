@@ -3,18 +3,31 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PublicationCard } from "@/components/catalog/PublicationCard"
-import { mockPublications, mockCategories } from "@/lib/mockData"
+import { useFetch } from "@/hooks/useFetch"
+import type { Publication, Category } from "@/types"
+
+interface PublicationsResponse {
+  publications: Publication[]
+  total: number
+}
+
+interface CategoriesResponse {
+  categories: Category[]
+}
 
 export function HomePage() {
   const { t, i18n } = useTranslation()
   const lang = i18n.language.startsWith("uz") ? "uz" : "ru"
   const tickerWords = t("home.ticker_words", { returnObjects: true }) as string[]
 
-  const featured = mockPublications.slice(0, 8)
+  const { data: pubData } = useFetch<PublicationsResponse>("/publications?page=1")
+  const { data: catData } = useFetch<CategoriesResponse>("/categories")
+
+  const featured = pubData?.publications.slice(0, 8) ?? []
+  const categories = catData?.categories ?? []
 
   return (
     <>
-      {/* Ticker */}
       <div className="border-b border-ink bg-ink text-paper overflow-hidden">
         <div className="ticker-track py-2 small-caps text-[0.78rem] font-sans tracking-[0.18em]">
           {[...tickerWords, ...tickerWords, ...tickerWords].map((w, i) => (
@@ -26,14 +39,11 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* HERO */}
       <section className="border-b-2 border-ink">
         <div className="container py-12 md:py-20">
           <div className="grid grid-cols-12 gap-6 md:gap-10">
             <div className="col-span-12 lg:col-span-8">
-              <Badge variant="accent" className="mb-6">
-                Vol. XXXV — № 1247
-              </Badge>
+              <Badge variant="accent" className="mb-6">Vol. XXXV — № 1247</Badge>
               <h1 className="font-display text-masthead font-black tracking-tight text-balance leading-[0.92]">
                 {t("home.hero_title")}
               </h1>
@@ -56,7 +66,7 @@ export function HomePage() {
                 {t("home.deck_left")}
               </p>
               <div className="mt-6 grid grid-cols-3 gap-4 pt-6 border-t border-paper-line">
-                <Stat number="40" label={t("home.stat_pubs")} />
+                <Stat number={String(pubData?.total ?? 40)} label={t("home.stat_pubs")} />
                 <Stat number="12K" label={t("home.stat_readers")} />
                 <Stat number="3.2K" label={t("home.stat_issues")} />
               </div>
@@ -65,13 +75,12 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* CATEGORIES strip */}
       <section className="border-b border-paper-line bg-paper-deep/40">
         <div className="container py-6 flex flex-wrap items-center gap-x-6 gap-y-2">
           <span className="small-caps font-sans text-[0.72rem] font-semibold text-ink-mute tracking-[0.22em]">
             {t("home.section_categories")}
           </span>
-          {mockCategories.map((c) => (
+          {categories.map((c) => (
             <Link
               key={c.id}
               to={`/catalog?category=${c.slug}`}
@@ -83,7 +92,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* POPULAR */}
       <section className="container py-16 md:py-24">
         <div className="flex items-end justify-between mb-10 border-b-2 border-ink pb-4">
           <div>
@@ -94,22 +102,22 @@ export function HomePage() {
               {t("home.section_popular")}
             </h2>
           </div>
-          <Link
-            to="/catalog"
-            className="hidden sm:block small-caps text-[0.78rem] font-sans font-semibold underline-grow"
-          >
+          <Link to="/catalog" className="hidden sm:block small-caps text-[0.78rem] font-sans font-semibold underline-grow">
             {t("nav.catalog")} →
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-          {featured.map((p) => (
-            <PublicationCard key={p.id} publication={p} />
-          ))}
-        </div>
+        {featured.length === 0 ? (
+          <div className="py-20 text-center font-editorial text-ink-mute">{t("common.loading")}…</div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+            {featured.map((p) => (
+              <PublicationCard key={p.id} publication={p} />
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* HOW IT WORKS */}
       <section className="border-y-2 border-ink bg-paper-deep">
         <div className="container py-16 md:py-24">
           <div className="grid grid-cols-12 gap-10 items-start">
@@ -122,7 +130,6 @@ export function HomePage() {
               </h2>
               <div className="mt-6 rule-thick" />
             </div>
-
             <div className="col-span-12 md:col-span-8 grid sm:grid-cols-3 gap-8">
               <Step n={1} title={t("home.how_step_1")} desc={t("home.how_step_1_desc")} />
               <Step n={2} title={t("home.how_step_2")} desc={t("home.how_step_2_desc")} />
@@ -132,7 +139,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* CTA bottom */}
       <section className="container py-20 md:py-28 text-center">
         <div className="small-caps text-[0.78rem] font-sans font-semibold text-accent tracking-[0.22em]">
           Subscribe

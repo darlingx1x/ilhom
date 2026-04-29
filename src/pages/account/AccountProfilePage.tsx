@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/lib/AuthContext"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"

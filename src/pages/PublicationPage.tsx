@@ -4,18 +4,33 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PublicationCover } from "@/components/catalog/PublicationCover"
-import { mockPublications, mockCategories } from "@/lib/mockData"
-import { formatPrice } from "@/lib/format"
+import { useFetch } from "@/hooks/useFetch"
+import { formatIssueDate, formatPrice } from "@/lib/format"
+import type { Issue, Publication } from "@/types"
 import { cn } from "@/lib/utils"
+
+interface Response {
+  publication: Publication
+  issues: Issue[]
+}
 
 export function PublicationPage() {
   const { slug } = useParams()
   const { t, i18n } = useTranslation()
   const lang = i18n.language.startsWith("uz") ? "uz" : "ru"
-  const pub = mockPublications.find((p) => p.slug === slug)
   const [period, setPeriod] = useState<1 | 3 | 12>(1)
 
-  if (!pub) {
+  const { data, loading, error } = useFetch<Response>(slug ? `/publications/${slug}` : null)
+
+  if (loading) {
+    return (
+      <div className="container py-32 text-center font-editorial text-ink-mute">
+        {t("common.loading")}…
+      </div>
+    )
+  }
+
+  if (error || !data) {
     return (
       <div className="container py-32 text-center">
         <div className="font-display text-4xl">404</div>
@@ -24,9 +39,9 @@ export function PublicationPage() {
     )
   }
 
+  const pub = data.publication
   const title = lang === "uz" ? pub.title_uz : pub.title_ru
   const description = lang === "uz" ? pub.description_uz : pub.description_ru
-  const category = mockCategories.find((c) => c.id === pub.category_id)
   const total = pub.price_per_month * period
 
   return (
@@ -45,8 +60,10 @@ export function PublicationPage() {
                 <Badge variant="accent">
                   {pub.type === "newspaper" ? t("catalog.type_newspaper") : t("catalog.type_magazine")}
                 </Badge>
-                {category && (
-                  <Badge variant="muted">{lang === "uz" ? category.name_uz : category.name_ru}</Badge>
+                {pub.category && (
+                  <Badge variant="muted">
+                    {lang === "uz" ? pub.category.name_uz : pub.category.name_ru}
+                  </Badge>
                 )}
               </div>
 
@@ -123,6 +140,23 @@ export function PublicationPage() {
           </div>
         </div>
       </section>
+
+      {data.issues.length > 0 && (
+        <section className="container pb-20">
+          <h2 className="font-display text-3xl font-bold tracking-tight">{t("publication.issues")}</h2>
+          <div className="mt-4 rule-thick" />
+          <ul className="mt-6 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-6">
+            {data.issues.map((iss) => (
+              <li key={iss.id}>
+                <PublicationCover title={`№ ${iss.issue_number}`} variant={pub.type} />
+                <div className="mt-2 small-caps font-sans text-[0.7rem] text-ink-mute">
+                  {formatIssueDate(iss.published_at, lang)}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </>
   )
 }

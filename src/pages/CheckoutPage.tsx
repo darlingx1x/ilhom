@@ -1,29 +1,69 @@
-import { Link, useParams, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { mockPublications } from "@/lib/mockData"
+import { useFetch } from "@/hooks/useFetch"
+import { api, ApiError } from "@/lib/api"
 import { formatPrice } from "@/lib/format"
+import type { Publication, Subscription } from "@/types"
+
+interface PublicationResp {
+  publication: Publication
+}
 
 export function CheckoutPage() {
   const { publicationId } = useParams()
   const [params] = useSearchParams()
   const { t, i18n } = useTranslation()
   const lang = i18n.language.startsWith("uz") ? "uz" : "ru"
-  const period = Number(params.get("period") || 1) as 1 | 3 | 12
-  const pub = mockPublications.find((p) => String(p.id) === publicationId)
+  const navigate = useNavigate()
+  const period = (Number(params.get("period") || 1) as 1 | 3 | 12)
+
+  const idNum = Number(publicationId)
+  const { data: pubByIdResp } = useFetch<{ publications: Publication[] }>("/publications?page=1")
+  const fallbackPub = pubByIdResp?.publications.find((p) => p.id === idNum)
+  const { data: pubResp } = useFetch<PublicationResp>(fallbackPub ? `/publications/${fallbackPub.slug}` : null)
+  const pub = pubResp?.publication ?? fallbackPub
+
+  const [card, setCard] = useState({ number: "", holder: "", expiry: "", cvc: "" })
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   if (!pub) {
     return (
-      <div className="container py-24 text-center">
-        <div className="font-display text-3xl">404</div>
+      <div className="container py-24 text-center font-editorial text-ink-mute">
+        {t("common.loading")}…
       </div>
     )
   }
 
   const title = lang === "uz" ? pub.title_uz : pub.title_ru
   const total = pub.price_per_month * period
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!pub) return
+    setError(null)
+    setLoading(true)
+    try {
+      const res = await api.post<{ subscription: Subscription }>("/subscriptions", {
+        publication_id: pub.id,
+        period_months: period,
+        card_number: card.number.replace(/\s+/g, ""),
+        card_holder: card.holder,
+        card_expiry: card.expiry,
+        card_cvc: card.cvc,
+      })
+      navigate(`/account/subscriptions/${res.subscription.id}`, { replace: true })
+    } catch (err) {
+      if (err instanceof ApiError) setError(err.message)
+      else setError("Не удалось оплатить")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <section className="container py-16 md:py-20">
@@ -37,27 +77,57 @@ export function CheckoutPage() {
           </h1>
           <div className="mt-6 rule-thick" />
 
-          <form className="mt-10 space-y-6">
+          <form className="mt-10 space-y-6" onSubmit={onSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="card">{t("checkout.card_number")}</Label>
-              <Input id="card" required placeholder="0000 0000 0000 0000" maxLength={19} />
+              <Label htmlFor="number">{t("checkout.card_number")}</Label>
+              <Input
+                id="number"
+                required
+                placeholder="0000 0000 0000 0000"
+                maxLength={23}
+                value={card.number}
+                onChange={(e) => setCard({ ...card, number: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="holder">{t("checkout.card_holder")}</Label>
-              <Input id="holder" required placeholder="IVAN IVANOV" />
+              <Input
+                id="holder"
+                required
+                placeholder="IVAN IVANOV"
+                value={card.holder}
+                onChange={(e) => setCard({ ...card, holder: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="exp">{t("checkout.card_expiry")}</Label>
-                <Input id="exp" required placeholder="04 / 28" />
+                <Label htmlFor="expiry">{t("checkout.card_expiry")}</Label>
+                <Input
+                  id="expiry"
+                  required
+                  placeholder="04 / 28"
+                  value={card.expiry}
+                  onChange={(e) => setCard({ ...card, expiry: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cvc">{t("checkout.card_cvc")}</Label>
-                <Input id="cvc" required type="password" maxLength={4} placeholder="•••" />
+                <Input
+                  id="cvc"
+                  required
+                  type="password"
+                  maxLength={4}
+                  placeholder="•••"
+                  value={card.cvc}
+                  onChange={(e) => setCard({ ...card, cvc: e.target.value })}
+                />
               </div>
             </div>
-            <Button type="submit" variant="accent" size="lg" className="w-full">
-              {t("checkout.pay")} · {formatPrice(total, lang)} {t("common.currency")}
+
+            {error && <div className="text-sm font-editorial text-accent">{error}</div>}
+
+            <Button type="submit" variant="accent" size="lg" className="w-full" disabled={loading}>
+              {loading ? t("common.loading") : `${t("checkout.pay")} · ${formatPrice(total, lang)} ${t("common.currency")}`}
             </Button>
           </form>
         </div>

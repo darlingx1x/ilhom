@@ -2,38 +2,52 @@ import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { mockPublications } from "@/lib/mockData"
+import { useFetch } from "@/hooks/useFetch"
+import { api } from "@/lib/api"
 import { formatDate, formatPrice } from "@/lib/format"
+import type { Subscription, SubscriptionStatus } from "@/types"
 
-const demoSubscriptions = [
-  { id: 1, publication_id: 1, period_months: 3, start_date: "2026-04-01", end_date: "2026-07-01", status: "active" as const, total_amount: 84000 },
-  { id: 2, publication_id: 4, period_months: 12, start_date: "2026-01-15", end_date: "2027-01-15", status: "active" as const, total_amount: 384000 },
-  { id: 3, publication_id: 5, period_months: 1, start_date: "2026-02-01", end_date: "2026-03-01", status: "expired" as const, total_amount: 22000 },
-]
+interface Resp {
+  subscriptions: Subscription[]
+}
 
 export function AccountSubscriptionsPage() {
   const { t, i18n } = useTranslation()
   const lang = i18n.language.startsWith("uz") ? "uz" : "ru"
+  const { data, loading, refetch } = useFetch<Resp>("/subscriptions")
+
+  const subs = data?.subscriptions ?? []
+
+  async function renew(id: number) {
+    await api.post(`/subscriptions/${id}/renew`)
+    refetch()
+  }
+  async function cancel(id: number) {
+    await api.post(`/subscriptions/${id}/cancel`)
+    refetch()
+  }
 
   return (
     <div>
       <h2 className="font-display text-3xl font-bold tracking-tight">{t("account.subscriptions")}</h2>
       <div className="mt-4 rule-thick" />
 
-      {demoSubscriptions.length === 0 ? (
+      {loading ? (
+        <div className="py-20 text-center font-editorial text-ink-mute">{t("common.loading")}…</div>
+      ) : subs.length === 0 ? (
         <div className="py-20 text-center font-editorial text-ink-mute">{t("account.no_subscriptions")}</div>
       ) : (
         <ul className="mt-6 divide-y divide-paper-line">
-          {demoSubscriptions.map((s) => {
-            const pub = mockPublications.find((p) => p.id === s.publication_id)!
-            const title = lang === "uz" ? pub.title_uz : pub.title_ru
+          {subs.map((s) => {
+            const title = lang === "uz" ? s.publication?.title_uz : s.publication?.title_ru
+            const status = s.status as SubscriptionStatus
             return (
               <li key={s.id} className="py-6 flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-3">
                     <h3 className="font-display text-xl font-bold">{title}</h3>
-                    <Badge variant={s.status === "active" ? "accent" : "muted"}>
-                      {t(`account.status_${s.status}`)}
+                    <Badge variant={status === "active" ? "accent" : "muted"}>
+                      {t(`account.status_${status}`)}
                     </Badge>
                   </div>
                   <p className="mt-1 text-sm font-editorial text-ink-mute">
@@ -44,8 +58,15 @@ export function AccountSubscriptionsPage() {
                   <Button asChild variant="outline" size="sm">
                     <Link to={`/account/subscriptions/${s.id}`}>{t("account.details")}</Link>
                   </Button>
-                  {s.status === "active" && (
-                    <Button variant="ghost" size="sm">{t("account.renew")}</Button>
+                  {status === "active" && (
+                    <>
+                      <Button onClick={() => renew(s.id)} variant="ghost" size="sm">
+                        {t("account.renew")}
+                      </Button>
+                      <Button onClick={() => cancel(s.id)} variant="ghost" size="sm">
+                        {t("account.cancel")}
+                      </Button>
+                    </>
                   )}
                 </div>
               </li>
