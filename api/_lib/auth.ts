@@ -2,8 +2,11 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 
-const SECRET = process.env.JWT_SECRET
-if (!SECRET) throw new Error("JWT_SECRET is not configured")
+function getSecret(): string {
+  const s = process.env.JWT_SECRET
+  if (!s) throw new Error("JWT_SECRET is not configured (Vercel → Settings → Environment Variables)")
+  return s
+}
 
 export interface JwtPayload {
   user_id: number
@@ -11,11 +14,11 @@ export interface JwtPayload {
 }
 
 export function signToken(payload: JwtPayload): string {
-  return jwt.sign(payload, SECRET as string, { expiresIn: "30d" })
+  return jwt.sign(payload, getSecret(), { expiresIn: "30d" })
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, SECRET as string) as JwtPayload
+  return jwt.verify(token, getSecret()) as JwtPayload
 }
 
 export async function hashPassword(password: string): Promise<string> {
